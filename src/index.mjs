@@ -35,6 +35,20 @@ function makeColumns(header) {
 }
 
 
+function encodeSQLident(identifier) {
+	return '"' + `${identifier}`.replace('"', '""') + '"';
+}
+
+
+function encodeSQLvalue(value) {
+	if (value instanceof Date) {
+		return `${value.getFullYear()}-${(value.getMonth() + 1).toString().padStart(2, '0')}-${value.getDate().toString().padStart(2, '0')} ${value.getHours().toString().padStart(2, '0')}:${value.getMinutes().toString().padStart(2, '0')}:${value.getSeconds().toString().padStart(2, '0')}.${value.getMilliseconds()}`;
+	} else {
+		return value;
+	}
+}
+
+
 export default class TableLoader {
     constructor(data, options=defaultOptions) {
         this.book = xlsx.read(data, {cellDates: true});
@@ -53,31 +67,52 @@ export default class TableLoader {
             throw new Error(`no such sheet: ${o.sheet || this.sheets[0]}`);
         }
 
-        let data = xlsx.utils.sheet_to_json(sheet, {
+        let values = xlsx.utils.sheet_to_json(sheet, {
             range: o.skip_row,
             header: 1,
             defval: null,
         });
 
-        if (data.length === 0) {
-            return {columns: [], data: []};
+        if (values.length === 0) {
+            return {columns: [], values: []};
         }
 
         let columns;
         if (o.use_header) {
-            columns = makeColumns(data[0]);
-            data = data.slice(1);
+            columns = makeColumns(values[0]);
+            values = values.slice(1);
         } else {
-            columns = data[0].map((_, i) => i);
+            columns = values[0].map((_, i) => i);
         }
 
         return {
             columns: columns,
-            data: data.map(row => columns.reduce((xs, x, i) => {
+            values: values.map(row => columns.reduce((xs, x, i) => {
                 xs[x] = row[i];
 
                 return xs;
             }, {})),
         }
     }
+
+	importInto(db, name, options={}) {
+		db.run('BEGIN');
+		try {
+			const {columns, values} = this.read(options);
+
+			db.run(`DROP TABLE IF EXISTS ${encodeSQLident(name)}`);
+			db.run(`CREATE TABLE ${encodeSQLident(name)} (${columns.map(encodeSQLident)})`);
+
+			const stmt = db.prepare(`INSERT INTO ${encodeSQLident(name)} VALUES (${columns.map(() => '?')})`);
+			for (let row of values) {
+				stmt.run(columns.map(key => encodeSQLvalue(row[key])));
+			}
+			stmt.free();
+
+			db.run('COMMIT');
+		} catch(err) {
+			db.run('ROLLBACK');
+			throw err;
+		}
+	}
 }
