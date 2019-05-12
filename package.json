@@ -1,11 +1,11 @@
 {
   "name": "sqljs-import-tables",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/index.mjs",
+  "description": "CSV/xlsx table loader for sql.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "test": "npx mocha --require '@babel/register'"
+    "test": "cross-env NODE_ENV=development nyc --require '@babel/register' --reporter lcov --reporter text mocha"
   },
   "repository": {
     "type": "git",
@@ -22,22 +22,28 @@
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
     "@babel/register": "^7.4.4",
+    "@babel/runtime": "^7.4.4",
+    "babel-preset-power-assert": "^3.0.0",
+    "cross-env": "^5.2.0",
     "mocha": "^6.1.4",
+    "nyc": "^14.1.1",
     "power-assert": "^1.6.1"
   },
   "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "node": "current"
-          }
-        }
-      ]
-    ]
+    "env": {
+      "development": {
+        "presets": [
+          "@babel/preset-env",
+          "power-assert"
+        ],
+        "plugins": [
+          "@babel/plugin-transform-runtime"
+        ]
+      }
+    }
   },
   "optionalDependencies": {
     "sql.js": "^1.0.0"

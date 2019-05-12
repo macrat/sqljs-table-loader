@@ -7,10 +7,11 @@ import Loader from '../src';
 
 
 describe('Loader', () => {
-	let db;
-
+	let sql, db;
 	before(async () => {
-		const sql = await initSqlJs();
+		sql = await initSqlJs();
+	});
+	beforeEach(() => {
 		db = new sql.Database();
 	});
 
@@ -77,6 +78,10 @@ describe('Loader', () => {
 				});
 			});
 
+			it('no exists sheet', () => {
+				assert.throws(() => loader.read({sheet: 'nobody'}), /^Error: no such sheet: nobody$/);
+			});
+
 			it('specific sheet / skip row', () => {
 				assert.deepStrictEqual(loader.read({sheet: 'beta', skip_row: 2}), {
 					columns: ['hoge', 'fuga', 'foo', 'hoge_1'],
@@ -99,9 +104,9 @@ describe('Loader', () => {
 
 		describe('#importInto', () => {
 			it('simple', () => {
-				loader.importInto(db, 'xlsx_tea');
+				loader.importInto(db, 'xlsx_simple');
 
-				assert.deepStrictEqual(db.exec('SELECT * FROM xlsx_tea'), [{
+				assert.deepStrictEqual(db.exec('SELECT * FROM xlsx_simple'), [{
 					columns: ['hoge', 'fuga'],
 					values: [
 						[1, 'a'],
@@ -112,9 +117,9 @@ describe('Loader', () => {
 			});
 
 			it('need escape', () => {
-				loader.importInto(db, 'xlsx_test B', {sheet: 'beta'});
+				loader.importInto(db, 'xlsx_need escape', {sheet: 'beta'});
 
-				assert.deepStrictEqual(db.exec('SELECT * FROM [xlsx_test B]'), [{
+				assert.deepStrictEqual(db.exec('SELECT * FROM [xlsx_need escape]'), [{
 					columns: ['this is title', '0', '1', '2'],
 					values: [
 						[null, null, null, null],
@@ -128,21 +133,43 @@ describe('Loader', () => {
 			});
 
 			it('override', () => {
-				assert.deepStrictEqual(db.exec('CREATE TABLE xlsx_tec (x); INSERT INTO xlsx_tec VALUES ("foobar"); SELECT * FROM xlsx_tec'), [{
+				assert.deepStrictEqual(db.exec('CREATE TABLE xlsx_override (x); INSERT INTO xlsx_override VALUES ("foobar"); SELECT * FROM xlsx_override'), [{
 					columns: ['x'],
 					values: [
 						['foobar'],
 					],
 				}]);
 
-				loader.importInto(db, 'xlsx_tec');
+				loader.importInto(db, 'xlsx_override');
 
-				assert.deepStrictEqual(db.exec('SELECT * FROM xlsx_tec'), [{
+				assert.deepStrictEqual(db.exec('SELECT * FROM xlsx_override'), [{
 					columns: ['hoge', 'fuga'],
 					values: [
 						[1, 'a'],
 						[2, 'b'],
 						[3, 'c'],
+					],
+				}]);
+			});
+
+			it('rollback', () => {
+				assert.deepStrictEqual(db.exec('CREATE TABLE xlsx_error (x); INSERT INTO xlsx_error VALUES ("foobar"); SELECT * FROM xlsx_error'), [{
+					columns: ['x'],
+					values: [
+						['foobar'],
+					],
+				}]);
+
+				db.prepare = () => {
+					throw new Error("test error");
+				};
+
+				assert.throws(() => loader.importInto(db, 'xlsx_error'), /^Error: test error$/);
+
+				assert.deepStrictEqual(db.exec('SELECT * FROM xlsx_error'), [{
+					columns: ['x'],
+					values: [
+						['foobar'],
 					],
 				}]);
 			});
@@ -164,10 +191,10 @@ describe('Loader', () => {
 
 		it('#read', () => {
 			assert.deepStrictEqual(loader.read(), {
-				columns: ['foo bar', 'hoge', 'fuga'],
+				columns: ['foo bar', 'hoge', 'fuga', 'x', 'x_1', 'x_2'],
 				values: [
-					{'foo bar': 1, hoge: 'hello', fuga: 'w o r l d'},
-					{'foo bar': 2, hoge: 'fizz', fuga: 'buzz'},
+					{'foo bar': 1, hoge: 'hello', fuga: 'w o r l d', x: 'a', x_1: 'b', x_2: 'c'},
+					{'foo bar': 2, hoge: 'fizz', fuga: 'buzz', x: 'd', x_1: 'e', x_2: 'f'},
 				],
 			});
 		});
@@ -176,12 +203,31 @@ describe('Loader', () => {
 			loader.importInto(db, 'csv_tea');
 
 			assert.deepStrictEqual(db.exec('SELECT * FROM csv_tea'), [{
-				columns: ['foo bar', 'hoge', 'fuga'],
+				columns: ['foo bar', 'hoge', 'fuga', 'x', 'x_1', 'x_2'],
 				values: [
-					[1, 'hello', 'w o r l d'],
-					[2, 'fizz', 'buzz'],
+					[1, 'hello', 'w o r l d', 'a', 'b', 'c'],
+					[2, 'fizz', 'buzz', 'd', 'e', 'f'],
 				],
 			}]);
+		});
+	});
+
+	describe('default options', () => {
+		it('default only', () => {
+			const loader = new Loader(fs.readFileSync(__dirname + '/test.xlsx'), {
+				sheet: 'beta',
+				skip_row: 2,
+			});
+
+			assert.deepStrictEqual(loader.read(), {
+				columns: ['hoge', 'fuga', 'foo', 'hoge_1'],
+				values: [
+					{hoge: new Date(2019, 0, 1), fuga: 1, foo: 'hello', hoge_1: 1024},
+					{hoge: new Date(2019, 0, 31), fuga: 2, foo: 'world', hoge_1: 2048},
+					{hoge: new Date(2019, 2, 1), fuga: 3, foo: 'fizz', hoge_1: 4096},
+					{hoge: new Date(2019, 11, 10), fuga: 4, foo: 'buzz', hoge_1: 8192},
+				],
+			});
 		});
 	});
 });

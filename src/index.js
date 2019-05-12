@@ -1,7 +1,7 @@
 import xlsx from 'xlsx';
 
 
-export const defaultOptions = {
+export const DEFAULT_OPTIONS = {
     skip_row: 0,
     use_header: true,
     sheet: null,
@@ -50,9 +50,9 @@ function encodeSQLvalue(value) {
 
 
 export default class TableLoader {
-    constructor(data, options=defaultOptions) {
+    constructor(data, options={}) {
         this.book = xlsx.read(data, {cellDates: true});
-        this.options = Object.assign({}, options);
+        this.options = Object.assign(Object.assign({}, DEFAULT_OPTIONS), options);
     }
 
     get sheets() {
@@ -62,9 +62,10 @@ export default class TableLoader {
     read(options={}) {
         const o = Object.assign(Object.assign({}, this.options), options);
 
-        const sheet = this.book.Sheets[o.sheet || this.sheets[0]];
+		const sheet_name = o.sheet || this.sheets[0];
+        const sheet = this.book.Sheets[sheet_name];
         if (sheet === undefined) {
-            throw new Error(`no such sheet: ${o.sheet || this.sheets[0]}`);
+            throw new Error(`no such sheet: ${sheet_name}`);
         }
 
         let values = xlsx.utils.sheet_to_json(sheet, {
