@@ -1,5 +1,5 @@
 {
-  "name": "sqljs-import-tables",
+  "name": "sqljs-table-loader",
   "version": "1.0.0",
   "description": "CSV/xlsx table loader for sql.js",
   "main": "src/index.js",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/macrat/sqljs-import-tables.git"
+    "url": "git+https://github.com/macrat/sqljs-table-loader.git"
   },
   "author": "MacRat <m@crat.jp>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/macrat/sqljs-import-tables/issues"
+    "url": "https://github.com/macrat/sqljs-table-loader/issues"
   },
-  "homepage": "https://github.com/macrat/sqljs-import-tables#readme",
+  "homepage": "https://github.com/macrat/sqljs-table-loader#readme",
   "dependencies": {
     "xlsx": "^0.14.3"
   },
