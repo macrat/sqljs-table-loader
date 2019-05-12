@@ -5,7 +5,9 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "test": "cross-env NODE_ENV=development nyc --require '@babel/register' --reporter lcov --reporter text mocha"
+    "test": "npm-run-all test:*",
+    "test:lint": "eslint src/",
+    "test:unit": "cross-env NODE_ENV=development nyc --require '@babel/register' --reporter lcov --reporter text mocha"
   },
   "repository": {
     "type": "git",
@@ -28,9 +30,14 @@
     "@babel/runtime": "^7.4.4",
     "babel-preset-power-assert": "^3.0.0",
     "cross-env": "^5.2.0",
+    "eslint": "^5.16.0",
     "mocha": "^6.1.4",
+    "npm-run-all": "^4.1.5",
     "nyc": "^14.1.1",
     "power-assert": "^1.6.1"
+  },
+  "optionalDependencies": {
+    "sql.js": "^1.0.0"
   },
   "babel": {
     "env": {
@@ -45,7 +52,62 @@
       }
     }
   },
-  "optionalDependencies": {
-    "sql.js": "^1.0.0"
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "rules": {
+      "arrow-body-style": [
+        "warn",
+        "as-needed"
+      ],
+      "arrow-parens": [
+        "warn",
+        "as-needed"
+      ],
+      "eqeqeq": "error",
+      "indent": [
+        "error",
+        4
+      ],
+      "init-declarations": [
+        "error",
+        "always"
+      ],
+      "no-catch-shadow": "warn",
+      "no-console": "off",
+      "no-floating-decimal": "error",
+      "no-implicit-coercion": "error",
+      "no-label-var": "error",
+      "no-self-compare": "error",
+      "no-shadow": "error",
+      "no-template-curly-in-string": "warn",
+      "no-throw-literal": "error",
+      "no-unused-vars": "off",
+      "no-var": "error",
+      "prefer-const": "warn",
+      "prefer-promise-reject-errors": "error",
+      "quotes": [
+        "warn",
+        "single"
+      ],
+      "space-before-blocks": [
+        "warn",
+        {
+          "functions": "always",
+          "keywords": "always",
+          "classes": "always"
+        }
+      ],
+      "valid-jsdoc": "warn",
+      "yoda": "warn"
+    },
+    "env": {
+      "es6": true,
+      "browser": true,
+      "node": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 2017,
+      "sourceType": "module"
+    }
   }
 }

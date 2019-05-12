@@ -36,16 +36,16 @@ function makeColumns(header) {
 
 
 function encodeSQLident(identifier) {
-	return '"' + `${identifier}`.replace('"', '""') + '"';
+    return '"' + `${identifier}`.replace('"', '""') + '"';
 }
 
 
 function encodeSQLvalue(value) {
-	if (value instanceof Date) {
-		return `${value.getFullYear()}-${(value.getMonth() + 1).toString().padStart(2, '0')}-${value.getDate().toString().padStart(2, '0')} ${value.getHours().toString().padStart(2, '0')}:${value.getMinutes().toString().padStart(2, '0')}:${value.getSeconds().toString().padStart(2, '0')}.${value.getMilliseconds()}`;
-	} else {
-		return value;
-	}
+    if (value instanceof Date) {
+        return `${value.getFullYear()}-${(value.getMonth() + 1).toString().padStart(2, '0')}-${value.getDate().toString().padStart(2, '0')} ${value.getHours().toString().padStart(2, '0')}:${value.getMinutes().toString().padStart(2, '0')}:${value.getSeconds().toString().padStart(2, '0')}.${value.getMilliseconds()}`;
+    } else {
+        return value;
+    }
 }
 
 
@@ -62,7 +62,7 @@ export default class TableLoader {
     read(options={}) {
         const o = Object.assign(Object.assign({}, this.options), options);
 
-		const sheet_name = o.sheet || this.sheets[0];
+        const sheet_name = o.sheet || this.sheets[0];
         const sheet = this.book.Sheets[sheet_name];
         if (sheet === undefined) {
             throw new Error(`no such sheet: ${sheet_name}`);
@@ -78,7 +78,7 @@ export default class TableLoader {
             return {columns: [], values: []};
         }
 
-        let columns;
+        let columns = [];
         if (o.use_header) {
             columns = makeColumns(values[0]);
             values = values.slice(1);
@@ -96,24 +96,24 @@ export default class TableLoader {
         }
     }
 
-	importInto(db, name, options={}) {
-		db.run('BEGIN');
-		try {
-			const {columns, values} = this.read(options);
+    importInto(db, name, options={}) {
+        db.run('BEGIN');
+        try {
+            const {columns, values} = this.read(options);
 
-			db.run(`DROP TABLE IF EXISTS ${encodeSQLident(name)}`);
-			db.run(`CREATE TABLE ${encodeSQLident(name)} (${columns.map(encodeSQLident)})`);
+            db.run(`DROP TABLE IF EXISTS ${encodeSQLident(name)}`);
+            db.run(`CREATE TABLE ${encodeSQLident(name)} (${columns.map(encodeSQLident)})`);
 
-			const stmt = db.prepare(`INSERT INTO ${encodeSQLident(name)} VALUES (${columns.map(() => '?')})`);
-			for (let row of values) {
-				stmt.run(columns.map(key => encodeSQLvalue(row[key])));
-			}
-			stmt.free();
+            const stmt = db.prepare(`INSERT INTO ${encodeSQLident(name)} VALUES (${columns.map(() => '?')})`);
+            for (const row of values) {
+                stmt.run(columns.map(key => encodeSQLvalue(row[key])));
+            }
+            stmt.free();
 
-			db.run('COMMIT');
-		} catch(err) {
-			db.run('ROLLBACK');
-			throw err;
-		}
-	}
+            db.run('COMMIT');
+        } catch(err) {
+            db.run('ROLLBACK');
+            throw err;
+        }
+    }
 }
