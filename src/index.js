@@ -51,7 +51,7 @@ function encodeSQLvalue(value) {
 
 export default class TableLoader {
     constructor(data, options={}) {
-        this.book = xlsx.read(data, {cellDates: true});
+        this.book = xlsx.read(data, {cellDates: true, type: typeof data === 'string' ? 'string' : undefined});
         this.options = Object.assign(Object.assign({}, DEFAULT_OPTIONS), options);
     }
 

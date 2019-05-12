@@ -212,6 +212,42 @@ describe('Loader', () => {
 		});
 	});
 
+	describe('plain text (csv)', () => {
+		let loader;
+
+		beforeEach(() => {
+			loader = new Loader('hoge,fuga\n1,2\n3,4');
+		});
+
+		it('#sheets', () => {
+			assert.deepStrictEqual(loader.sheets, [
+				'Sheet1',
+			]);
+		});
+
+		it('#read', () => {
+			assert.deepStrictEqual(loader.read(), {
+				columns: ['hoge', 'fuga'],
+				values: [
+					{hoge: 1, fuga: 2},
+					{hoge: 3, fuga: 4},
+				],
+			});
+		});
+
+		it('#importInto', () => {
+			loader.importInto(db, 'csv_tea');
+
+			assert.deepStrictEqual(db.exec('SELECT * FROM csv_tea'), [{
+				columns: ['hoge', 'fuga'],
+				values: [
+					[1, 2],
+					[3, 4],
+				],
+			}]);
+		});
+	});
+
 	describe('default options', () => {
 		it('default only', () => {
 			const loader = new Loader(fs.readFileSync(__dirname + '/test.xlsx'), {
