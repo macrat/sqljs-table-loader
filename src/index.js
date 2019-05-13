@@ -6,19 +6,13 @@ function makeColumns(header) {
 
     for (let x of header) {
         if (result.includes(x) || x === null || x === '') {
-            if (x === null || x === '') {
-                let i = 0;
-                while (result.includes(i)) {
-                    i++;
-                }
-                x = i;
-            } else {
-                let i = 1;
-                while (result.includes(`${x}_${i}`)) {
-                    i++;
-                }
-                x = `${x}_${i}`;
+            const gen = (x === null || x === '') ? (i => i) : (i => `${x}_${i + 1}`);
+
+            let i = 0;
+            while (result.includes(gen(i))) {
+                i++;
             }
+            x = gen(i);
 
         }
         result.push(x);
