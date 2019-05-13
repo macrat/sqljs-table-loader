@@ -1,0 +1,9 @@
+language: node_js
+
+node_js:
+  - "stable"
+  - "lts/*"
+
+after_success:
+  - npm install codeclimate-test-reporter
+  - CODECLIMATE_REPO_TOKEN=f787bb1e0d367387d69ea71899e190d987d3616d6c8331995f20bfd54ee00a90 ./node_modules/.bin/codeclimate-test-reporter < ./coverage/lcov.info

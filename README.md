@@ -1,6 +1,10 @@
 SQL.js TableLoader
 ==================
 
+[![Build Status](https://travis-ci.org/macrat/sqljs-table-loader.svg?branch=master)](https://travis-ci.org/macrat/sqljs-table-loader)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/acf76e20e48a6f573e18/test_coverage)](https://codeclimate.com/github/macrat/sqljs-table-loader/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/acf76e20e48a6f573e18/maintainability)](https://codeclimate.com/github/macrat/sqljs-table-loader/maintainability)
+
 excel/csv file loader for [SQL.js](https://github.com/kripken/sql.js).
 
 ## Usage
