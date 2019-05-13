@@ -4,6 +4,11 @@ SQL.js TableLoader
 excel/csv file loader for [SQL.js](https://github.com/kripken/sql.js).
 
 ## Usage
+### in Node.js
+``` shell
+$ npm install macrat/sqljs-table-loader
+```
+
 ``` javascript
 import fs from 'fs';
 import initSqlJs from 'sql.js';
@@ -14,7 +19,7 @@ const data = fs.readFileSync(__dirname + '/file.xlsx');
 const loader = new TableLoader(data, {/* options (see below) */});
 
 initSqlJs(sql => {
-	const db = sql.Database();
+	const db = new sql.Database();
 
 	console.log(loader.sheets);  // view sheet names included in excel file
 	console.log(loader.read({/* override options (see below) */}));  // view table data
@@ -23,6 +28,19 @@ initSqlJs(sql => {
 
 	console.log(db.exec('SELECT * FROM target_table'));
 });
+```
+
+### in browser
+``` html
+<script src="https://unpkg.com/xlsx"></script>  <!-- required -->
+<script src="https://unpkg.com/sql.js"></script>  <!-- optional -->
+<script src="https://unpkg.com/sqljs-table-loader"></script>  <!-- this library -->
+<script>
+var loader = new TableLoader('foo,bar\n1,hello\n2,world');
+
+console.log(loader.sheets);
+console.log(loader.read());
+</script>
 ```
 
 ## Options

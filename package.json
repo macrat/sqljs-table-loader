@@ -2,15 +2,15 @@
   "name": "sqljs-table-loader",
   "version": "1.0.0",
   "description": "CSV/xlsx table loader for sql.js",
-  "main": "src/index.js",
-  "type": "module",
+  "main": "dist/sqljs-table-loader",
   "files": [
     "README.md",
     "LICENSE",
-    "src"
+    "example.js",
+    "dist"
   ],
-  "runkitExampleFilename": "example.js",
   "scripts": {
+    "build": "rollup -c",
     "test": "npm-run-all test:*",
     "test:lint": "eslint src/",
     "test:unit": "cross-env NODE_ENV=development nyc --require '@babel/register' --reporter lcov --reporter text mocha"
@@ -40,7 +40,9 @@
     "mocha": "^6.1.4",
     "npm-run-all": "^4.1.5",
     "nyc": "^14.1.1",
-    "power-assert": "^1.6.1"
+    "power-assert": "^1.6.1",
+    "rollup": "^1.11.3",
+    "rollup-plugin-babel": "^4.3.2"
   },
   "optionalDependencies": {
     "sql.js": "^1.0.0"

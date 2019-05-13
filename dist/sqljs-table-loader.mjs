@@ -1,6 +1,5 @@
 import xlsx from 'xlsx';
 
-
 function makeColumns(header) {
     const result = [];
 
@@ -42,7 +41,7 @@ function encodeSQLvalue(value) {
 }
 
 
-export default class TableLoader {
+class TableLoader {
     constructor(data, options={}) {
         this.book = xlsx.read(data, {cellDates: true, type: typeof data === 'string' ? 'string' : undefined});
         this.options = Object.assign(Object.assign({}, TableLoader.DEFAULT_OPTIONS), options);
@@ -117,3 +116,5 @@ TableLoader.DEFAULT_OPTIONS = {
     use_header: true,
     sheet: null,
 };
+
+export default TableLoader;
