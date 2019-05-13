@@ -13,7 +13,7 @@
     "build": "rollup -c",
     "test": "npm-run-all test:*",
     "test:lint": "eslint src/",
-    "test:unit": "cross-env NODE_ENV=development nyc --require '@babel/register' --reporter lcov --reporter text mocha"
+    "test:unit": "cross-env NODE_ENV=development nyc --require '@babel/register' --reporter lcov --reporter text mocha --timeout 5000"
   },
   "repository": {
     "type": "git",
