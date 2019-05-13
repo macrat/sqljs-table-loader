@@ -4,6 +4,12 @@
   "description": "CSV/xlsx table loader for sql.js",
   "main": "src/index.js",
   "type": "module",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "src"
+  ],
+  "runkitExampleFilename": "example.js",
   "scripts": {
     "test": "npm-run-all test:*",
     "test:lint": "eslint src/",
