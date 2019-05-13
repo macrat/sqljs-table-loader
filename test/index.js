@@ -27,6 +27,7 @@ describe('Loader', () => {
 				'alpha',
 				'beta',
 				'empty',
+                'm17n 文あ',
 			]);
 		});
 
@@ -100,6 +101,22 @@ describe('Loader', () => {
 					values: [],
 				});
 			});
+
+            it('m17n', () => {
+				assert.deepStrictEqual(loader.read({sheet: 'm17n 文あ'}), {
+					columns: ['lang', 'local ローカル'],
+					values: [
+                        {lang: 'cn', 'local ローカル': '表裝載機'},
+                        {lang: 'en', 'local ローカル': 'table loader'},
+                        {lang: 'hi', 'local ローカル': 'टेबल लोडर'},
+                        {lang: 'kr', 'local ローカル': '테이블 로더'},
+                        {lang: 'ar', 'local ローカル': 'محمل الجدول'},
+                        {lang: 'bn', 'local ローカル': 'টেবিল লোডার'},
+                        {lang: 'ru', 'local ローカル': 'настольный погрузчик'},
+                        {lang: 'ja', 'local ローカル': 'テーブルローダー'},
+                    ],
+				});
+            });
 		});
 
 		describe('#importInto', () => {
@@ -173,6 +190,24 @@ describe('Loader', () => {
 					],
 				}]);
 			});
+
+            it('m17n', () => {
+				loader.importInto(db, 'xlsx_m17n', {sheet: 'm17n 文あ'});
+
+                assert.deepStrictEqual(db.exec('SELECT * FROM xlsx_m17n'), [{
+					columns: ['lang', 'local ローカル'],
+					values: [
+                        ['cn', '表裝載機'],
+                        ['en', 'table loader'],
+                        ['hi', 'टेबल लोडर'],
+                        ['kr', '테이블 로더'],
+                        ['ar', 'محمل الجدول'],
+                        ['bn', 'টেবিল লোডার'],
+                        ['ru', 'настольный погрузчик'],
+                        ['ja', 'テーブルローダー'],
+                    ],
+				}]);
+            });
 		});
 	});
 
@@ -208,6 +243,54 @@ describe('Loader', () => {
 					[1, 'hello', 'w o r l d', 'a', 'b', 'c'],
 					[2, 'fizz', 'buzz', 'd', 'e', 'f'],
 				],
+			}]);
+		});
+	});
+
+	describe('csv (utf8)', () => {
+		let loader;
+
+		beforeEach(() => {
+			loader = new Loader(fs.readFileSync(__dirname + '/test-m17n.utf8.csv'));
+		});
+
+		it('#sheets', () => {
+			assert.deepStrictEqual(loader.sheets, [
+				'Sheet1',
+			]);
+		});
+
+		it('#read', () => {
+            assert.deepStrictEqual(loader.read(), {
+                columns: ['lang', 'local ローカル'],
+                values: [
+                    {lang: 'cn', 'local ローカル': '表裝載機'},
+                    {lang: 'en', 'local ローカル': 'table loader'},
+                    {lang: 'hi', 'local ローカル': 'टेबल लोडर'},
+                    {lang: 'kr', 'local ローカル': '테이블 로더'},
+                    {lang: 'ar', 'local ローカル': 'محمل الجدول'},
+                    {lang: 'bn', 'local ローカル': 'টেবিল লোডার'},
+                    {lang: 'ru', 'local ローカル': 'настольный погрузчик'},
+                    {lang: 'ja', 'local ローカル': 'テーブルローダー'},
+                ],
+            });
+		});
+
+		it('#importInto', () => {
+			loader.importInto(db, 'csv_tea');
+
+			assert.deepStrictEqual(db.exec('SELECT * FROM csv_tea'), [{
+                columns: ['lang', 'local ローカル'],
+                values: [
+                    ['cn', '表裝載機'],
+                    ['en', 'table loader'],
+                    ['hi', 'टेबल लोडर'],
+                    ['kr', '테이블 로더'],
+                    ['ar', 'محمل الجدول'],
+                    ['bn', 'টেবিল লোডার'],
+                    ['ru', 'настольный погрузчик'],
+                    ['ja', 'テーブルローダー'],
+                ],
 			}]);
 		});
 	});

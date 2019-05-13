@@ -44,6 +44,7 @@ export default class TableLoader {
             cellDates: true,
             type: typeof data === 'string' ? 'string' : undefined,
             delimiter: this.options.delimiter,
+            codepage: 65001,
         });
     }
 

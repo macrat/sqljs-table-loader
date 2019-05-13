@@ -48,9 +48,9 @@ console.log(loader.read());
 ```
 
 ## Options
-|name       |default|description                                  |
-|-----------|-------|---------------------------------------------|
-|skip\_row  |0      |Skip first rows                              |
-|use\_header|true   |Use first row as column names                |
-|sheet      |null   |Sheet name to load (if null, load first)     |
-|delimiter  |','    |The delimiter for csv (only for constructor)||
+|name       |default|description                                 |
+|-----------|-------|--------------------------------------------|
+|skip\_row  |0      |Skip first rows                             |
+|use\_header|true   |Use first row as column names               |
+|sheet      |null   |Sheet name to load (if null, load first)    |
+|delimiter  |','    |The delimiter for csv (only for constructor)|
