@@ -5,19 +5,13 @@ function makeColumns(header) {
 
     for (let x of header) {
         if (result.includes(x) || x === null || x === '') {
-            if (x === null || x === '') {
-                let i = 0;
-                while (result.includes(i)) {
-                    i++;
-                }
-                x = i;
-            } else {
-                let i = 1;
-                while (result.includes(`${x}_${i}`)) {
-                    i++;
-                }
-                x = `${x}_${i}`;
+            const gen = (x === null || x === '') ? (i => i) : (i => `${x}_${i + 1}`);
+
+            let i = 0;
+            while (result.includes(gen(i))) {
+                i++;
             }
+            x = gen(i);
 
         }
         result.push(x);
@@ -43,8 +37,13 @@ function encodeSQLvalue(value) {
 
 class TableLoader {
     constructor(data, options={}) {
-        this.book = xlsx.read(data, {cellDates: true, type: typeof data === 'string' ? 'string' : undefined});
         this.options = Object.assign(Object.assign({}, TableLoader.DEFAULT_OPTIONS), options);
+
+        this.book = xlsx.read(data, {
+            cellDates: true,
+            type: typeof data === 'string' ? 'string' : undefined,
+            delimiter: this.options.delimiter,
+        });
     }
 
     get sheets() {
@@ -115,6 +114,7 @@ TableLoader.DEFAULT_OPTIONS = {
     skip_row: 0,
     use_header: true,
     sheet: null,
+    delimiter: ',',
 };
 
 export default TableLoader;

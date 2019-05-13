@@ -38,8 +38,13 @@ function encodeSQLvalue(value) {
 
 export default class TableLoader {
     constructor(data, options={}) {
-        this.book = xlsx.read(data, {cellDates: true, type: typeof data === 'string' ? 'string' : undefined});
         this.options = Object.assign(Object.assign({}, TableLoader.DEFAULT_OPTIONS), options);
+
+        this.book = xlsx.read(data, {
+            cellDates: true,
+            type: typeof data === 'string' ? 'string' : undefined,
+            delimiter: this.options.delimiter,
+        });
     }
 
     get sheets() {
@@ -110,4 +115,5 @@ TableLoader.DEFAULT_OPTIONS = {
     skip_row: 0,
     use_header: true,
     sheet: null,
+    delimiter: ',',
 };

@@ -212,6 +212,42 @@ describe('Loader', () => {
 		});
 	});
 
+	describe('tsv', () => {
+		let loader;
+
+		beforeEach(() => {
+			loader = new Loader(fs.readFileSync(__dirname + '/test.tsv'), {delimiter: '\t'});
+		});
+
+		it('#sheets', () => {
+			assert.deepStrictEqual(loader.sheets, [
+				'Sheet1',
+			]);
+		});
+
+		it('#read', () => {
+			assert.deepStrictEqual(loader.read(), {
+				columns: ['foo bar', 'hoge', 'fuga', 'x', 'x_1', 'x_2'],
+				values: [
+					{'foo bar': 1, hoge: 'hello', fuga: 'w o r l d', x: 'a', x_1: 'b', x_2: 'c'},
+					{'foo bar': 2, hoge: 'fizz', fuga: 'buzz', x: 'd', x_1: 'e', x_2: 'f'},
+				],
+			});
+		});
+
+		it('#importInto', () => {
+			loader.importInto(db, 'csv_tea');
+
+			assert.deepStrictEqual(db.exec('SELECT * FROM csv_tea'), [{
+				columns: ['foo bar', 'hoge', 'fuga', 'x', 'x_1', 'x_2'],
+				values: [
+					[1, 'hello', 'w o r l d', 'a', 'b', 'c'],
+					[2, 'fizz', 'buzz', 'd', 'e', 'f'],
+				],
+			}]);
+		});
+	});
+
 	describe('plain text (csv)', () => {
 		let loader;
 
