@@ -1,20 +1,24 @@
 import xlsx from 'xlsx';
 
+function makeColumnName(used, name) {
+    if (used.includes(name) || name === null || name === '') {
+        const gen = i => (name === null || name === '') ? i : `${name}_${i + 1}`;
+
+        let i = 0;
+        while (used.includes(gen(i))) {
+            i++;
+        }
+        return gen(i);
+    }
+    return name;
+}
+
+
 function makeColumns(header) {
     const result = [];
 
-    for (let x of header) {
-        if (result.includes(x) || x === null || x === '') {
-            const gen = (x === null || x === '') ? (i => i) : (i => `${x}_${i + 1}`);
-
-            let i = 0;
-            while (result.includes(gen(i))) {
-                i++;
-            }
-            x = gen(i);
-
-        }
-        result.push(x);
+    for (const x of header) {
+        result.push(makeColumnName(result, x));
     }
 
     return result;
