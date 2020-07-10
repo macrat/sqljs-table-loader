@@ -1,6 +1,6 @@
 {
   "name": "sqljs-table-loader",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "CSV/xlsx table loader for sql.js",
   "main": "dist/sqljs-table-loader",
   "files": [
