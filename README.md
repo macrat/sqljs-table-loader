@@ -10,7 +10,7 @@ excel/csv file loader for [SQL.js](https://github.com/kripken/sql.js).
 ## Usage
 ### in Node.js
 ``` shell
-$ npm install macrat/sqljs-table-loader
+$ npm install sqljs-table-loader
 ```
 
 ``` javascript
