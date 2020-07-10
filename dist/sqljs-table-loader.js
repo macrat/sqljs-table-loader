@@ -2,9 +2,9 @@
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('xlsx')) :
     typeof define === 'function' && define.amd ? define(['xlsx'], factory) :
     (global = global || self, global.TableLoader = factory(global.xlsx));
-}(this, function (xlsx) { 'use strict';
+}(this, (function (xlsx) { 'use strict';
 
-    xlsx = xlsx && xlsx.hasOwnProperty('default') ? xlsx['default'] : xlsx;
+    xlsx = xlsx && Object.prototype.hasOwnProperty.call(xlsx, 'default') ? xlsx['default'] : xlsx;
 
     function makeColumnName(used, name) {
         if (used.includes(name) || name === null || name === '') {
@@ -130,4 +130,4 @@
 
     return TableLoader;
 
-}));
+})));
